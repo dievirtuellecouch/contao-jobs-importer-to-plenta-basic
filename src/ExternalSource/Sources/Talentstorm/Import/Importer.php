@@ -8,7 +8,7 @@ use Psr\Log\LoggerInterface;
 
 class Importer
 {
-    const ROUTE_LIST_ALL = 'https://api.talentstorm.de/api/v1/joboffers/basic?itemPerPage=100'; /* 100 Jobs listed */
+    const ROUTE_LIST_ALL = 'https://api.talentstorm.de/api/v1/joboffers/basic';
 
     private $client;
 

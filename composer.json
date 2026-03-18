@@ -2,12 +2,12 @@
     "name": "dvc/contao-jobs-importer-to-plenta-basic",
     "description": "Allows to import job offers into Plenta Jobs Basic from various sources.",
     "type": "contao-bundle",
-    "version": "5.7.0",
+    "version": "5.7.2",
     "require": {
         "php": "^8.2",
         "contao/core-bundle": "^5.7",
         "plenta/contao-jobs-basic-bundle": "3.*",
-        "symfony/serializer": "^7.0",
+        "symfony/serializer": "^7.4",
         "dazet/data-map": "^0.2.0",
         "ezyang/htmlpurifier": "^4.17"
     },

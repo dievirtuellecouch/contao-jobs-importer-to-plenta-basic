@@ -13,7 +13,7 @@ class ImportCron
     ) {
     }
 
-    public function __invoke()
+    public function __invoke(): void
     {
         $this->importer->importAll();
     }

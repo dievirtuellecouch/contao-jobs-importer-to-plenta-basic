@@ -2,18 +2,17 @@
 
 namespace DVC\JobsImporterToPlentaBasic\EventListener\Contao;
 
-use Contao\CoreBundle\ServiceAnnotation\Hook;
+use Contao\CoreBundle\DependencyInjection\Attribute\AsHook;
 use Contao\Input;
 use Plenta\ContaoJobsBasic\Contao\Model\PlentaJobsBasicOfferModel as JobOfferModel;
 
 /**
  * Bridge legacy insert tag {{job::externalApplicationUrl}} to the new resolver.
- *
- * @Hook("replaceInsertTags")
  */
+#[AsHook('replaceInsertTags')]
 class InsertTagListener
 {
-    public function __invoke(string $tag)
+    public function __invoke(string $tag): string|false
     {
         $chunks = explode('::', $tag, 2);
 
@@ -35,4 +34,3 @@ class InsertTagListener
         return (string) ($offer->externalApplicationUrl ?? '');
     }
 }
-

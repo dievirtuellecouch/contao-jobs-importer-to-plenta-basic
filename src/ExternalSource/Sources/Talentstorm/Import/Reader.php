@@ -2,17 +2,15 @@
 
 namespace DVC\JobsImporterToPlentaBasic\ExternalSource\Sources\Talentstorm\Import;
 
-use Doctrine\Common\Annotations\AnnotationReader;
 use DVC\JobsImporterToPlentaBasic\ExternalSource\ReaderInterface;
 use DVC\JobsImporterToPlentaBasic\ExternalSource\Sources\Talentstorm\DataTransfer\JobOfferDataTransfer;
 use DVC\JobsImporterToPlentaBasic\ExternalSource\Sources\Talentstorm\DataTransfer\OrganizationDataTransfer;
-use DVC\JobsImporterToPlentaBasic\ExternalSource\Sources\Talentstorm\Import\Importer;
 use DVC\JobsImporterToPlentaBasic\ExternalSource\SupportedModel;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
 use Symfony\Component\PropertyInfo\PropertyInfoExtractor;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Mapping\Factory\ClassMetadataFactory;
-use Symfony\Component\Serializer\Mapping\Loader\AnnotationLoader;
+use Symfony\Component\Serializer\Mapping\Loader\AttributeLoader;
 use Symfony\Component\Serializer\Normalizer\ArrayDenormalizer;
 use Symfony\Component\Serializer\Normalizer\DateTimeNormalizer;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
@@ -21,14 +19,15 @@ use Symfony\Component\Serializer\Serializer;
 
 class Reader implements ReaderInterface
 {
-    private $serializer;
-    private $jobs = [];
-    private $locations = [];
+    private Serializer $serializer;
+    private array $jobs = [];
+    private array $locations = [];
+    private ?array $organizations = null;
 
     public function __construct(
         private Importer $importer,
     ) {
-        $classMetadataFactory = new ClassMetadataFactory(new AnnotationLoader(new AnnotationReader()));
+        $classMetadataFactory = new ClassMetadataFactory(new AttributeLoader());
 
         $encoders = [new JsonEncoder()];
         $normalizers = [
@@ -56,7 +55,7 @@ class Reader implements ReaderInterface
 
         $items = \array_key_exists('hydra:member', $data) ? $data['hydra:member'] : [];
 
-        $this->jobs = \array_map(function($item) {
+        $this->jobs = \array_map(function ($item) {
             return $this->serializer->denormalize(
                 $item,
                 JobOfferDataTransfer::class,
@@ -79,7 +78,7 @@ class Reader implements ReaderInterface
             return null;
         }
 
-        $locationsPerJob = \array_map(function($job) {
+        $locationsPerJob = \array_map(function ($job) {
             return $job->jobofferLocations;
         }, $availableJobs);
 
@@ -90,7 +89,7 @@ class Reader implements ReaderInterface
 
     public function getAllOrganizations(): ?array
     {
-        if (!empty($this->organizations)) {
+        if ($this->organizations !== null) {
             return $this->organizations;
         }
 
@@ -100,7 +99,7 @@ class Reader implements ReaderInterface
             return null;
         }
 
-        return \array_map(function($location) {
+        return \array_map(function ($location) {
             $organizationDataTransfer = new OrganizationDataTransfer();
             $organizationDataTransfer->label = $location->label;
             return $organizationDataTransfer;
@@ -109,20 +108,10 @@ class Reader implements ReaderInterface
 
     public function getItemsForIdentifier(SupportedModel $identifier): ?array
     {
-        switch ($identifier) {
-            case SupportedModel::Location:
-                return $this->getAllLocations();
-                break;
-
-            case SupportedModel::Offer:
-                return $this->getAllAvailableJobs();
-                break;
-
-            case SupportedModel::Organization:
-                return $this->getAllOrganizations();
-                break;
-        }
-
-        return null;
+        return match ($identifier) {
+            SupportedModel::Location => $this->getAllLocations(),
+            SupportedModel::Offer => $this->getAllAvailableJobs(),
+            SupportedModel::Organization => $this->getAllOrganizations(),
+        };
     }
 }

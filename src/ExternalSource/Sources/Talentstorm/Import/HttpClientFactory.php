@@ -7,6 +7,8 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class HttpClientFactory
 {
+    private HttpClientInterface $client;
+
     public function __construct(
         private ?string $apiSecret = null,
         private int $timeout = 4,

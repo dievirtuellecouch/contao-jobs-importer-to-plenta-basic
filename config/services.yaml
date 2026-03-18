@@ -42,6 +42,8 @@ services:
 
   DVC\JobsImporterToPlentaBasic\Repository\JobTypeRepository:
 
+  DVC\JobsImporterToPlentaBasic\EventListener\Contao\InsertTagListener:
+
   DVC\JobsImporterToPlentaBasic\EventListener\DataContainer\AddJobListingLabelCallback:
 
   DVC\JobsImporterToPlentaBasic\EventListener\DataContainer\MakeFieldsReadonlyCallback:

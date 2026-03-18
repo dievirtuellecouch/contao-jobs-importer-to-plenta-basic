@@ -4,10 +4,10 @@
     "type": "contao-bundle",
     "version": "5.7.0",
     "require": {
-        "php": "^8.3",
+        "php": "^8.2",
         "contao/core-bundle": "^5.7",
         "plenta/contao-jobs-basic-bundle": "3.*",
-        "symfony/serializer": "^6.4",
+        "symfony/serializer": "^7.0",
         "dazet/data-map": "^0.2.0",
         "ezyang/htmlpurifier": "^4.17"
     },
